@@ -4,4 +4,4 @@ build:
 release:
   image: web
   command:
-    - ./manage.py -a coronahjalpen migrate
+    - ./manage.py migrate
