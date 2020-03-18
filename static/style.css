@@ -1,0 +1,43 @@
+@font-face {
+    font-family: fira-sans-bold;
+    src: url("/static/fonts/Fira_Sans/FiraSans-Bold.ttf");
+}
+
+@font-face {
+    font-family: merriweather;
+    src: url("/static/fonts/Merriweather/Merriweather-Regular.ttf");
+}
+
+html, body {
+    padding: 0 20px;
+    font-family: merriweather, serif;
+    max-width: 800px;
+    margin: 20px auto;
+    font-size: 20px;
+    line-height: 1.7;
+}
+
+h1, h2, h3, h4 {
+    margin-top: 60px;
+    font-family: fira-sans-bold, sans-serif;
+    text-align: center;
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+h1 {
+    font-size: 60px;
+}
+h2 {
+    font-size: 40px;
+}
+h3 {
+    font-size: 30px;
+}
+h4 {
+    font-size: 20px;
+}
+
+.subheading {
+    font-size: 45px;
+}
