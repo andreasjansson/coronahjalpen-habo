@@ -13,6 +13,11 @@ services:
       SECRET_KEY: "not secure only use for development"
       # these things can be set in .env
       DATABASE_URL: "${DATABASE_URL:-postgres://postgres@db:5432/postgres}"
+      TWILIO_ACCOUNT_SID: "$TWILIO_ACCOUNT_SID"
+      TWILIO_AUTH_TOKEN: "$TWILIO_AUTH_TOKEN"
+      PHONE_NUMBER: "$PHONE_NUMBER"
+      FB_APP_ID: "$FB_APP_ID"
+      FB_APP_SECRET: "$FB_APP_SECRET"
     volumes:
       - .:/app
     ports:

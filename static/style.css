@@ -41,3 +41,21 @@ h4 {
 .subheading {
     font-size: 45px;
 }
+
+#voicemail {
+    font-family: sans-serif;
+    font-size: 16px;
+}
+
+#voicemail td {
+    padding: 3px 10px;
+}
+
+.mark-posted {
+    width: 25px;
+    height: 25px;
+}
+
+#voicemail audio {
+    width: 150px;
+}

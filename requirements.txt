@@ -1,5 +1,8 @@
 django==3.0.4
+social-auth-app-django
 gunicorn==20.0.4
-psycogreen
 psycopg2
 gevent
+twilio==6.37.0
+phonenumbers
+django-environ==0.4.5

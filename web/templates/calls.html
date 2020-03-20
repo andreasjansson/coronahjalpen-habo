@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
+
+<h1>Röstbrevlåda</h1>
+<p>
+  Lyssna av nya meddelanden, posta namn och ungefärlig adress i <a href="https://www.facebook.com/groups/coronahjalp.habo" target="blank">Facebookgruppen</a>, och klicka sedan på "Postad"-knappen.
+</p>
+<p>
+  När någon i Facebookgruppen säger att de kan ta beställningen, skicka direktmeddelande till den personen och ge dem fullständig adress och telefonnummer.
+</p>
+<p>
+  Uppdatera denna sidan lite då och då under dagens gång.
+</p>
+
+<table id="voicemail">
+  <thead>
+    <tr>
+      <th>Postad</th>
+      <th>Tid</th>
+      <th>Telefonnummer</th>
+      <th>Längd</th>
+      <th>Lyssna</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for call in calls %}
+  <tr>
+    <td>
+      <input data-sid="{{ call.twilio_sid }}" class="mark-posted" type="checkbox" {% if call.handled %}checked="checked"{% endif %} />
+    </td>
+    <td>{{ call.timestamp|date:'Y-m-d H:i' }}</td>
+    <td>{{ call.number }}</td>
+    <td>{{ call.duration }}</td>
+    <td>
+      {% if call.recording_url %}
+      <audio controls src="{{ call.recording_url }}"></audio>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock content %}
+
+{% block scripts %}
+    <script src="{% static "calls.js" %}"></script>
+{% endblock scripts %}
