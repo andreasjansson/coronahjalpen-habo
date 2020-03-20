@@ -28,7 +28,7 @@ env = environ.Env()  # pylint: disable=invalid-name
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = is_debug
+DEBUG = True  # TODO
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
