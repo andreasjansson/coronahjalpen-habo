@@ -28,7 +28,7 @@ env = environ.Env()  # pylint: disable=invalid-name
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # TODO
+DEBUG = True  # TODO, otherwise won't load static resources
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
@@ -118,15 +118,13 @@ LOGOUT_REDIRECT_URL = "login"
 
 SOCIAL_AUTH_FACEBOOK_KEY = env("FB_APP_ID")
 SOCIAL_AUTH_FACEBOOK_SECRET = env("FB_APP_SECRET")
-SOCIAL_AUTH_FACEBOOK_SCOPE = ["email", "user_link"]
+SOCIAL_AUTH_FACEBOOK_SCOPE = []
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-    "fields": "id, name, email, picture.type(large), link"
+    "fields": "id, name, picture.type(large)"
 }
 SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [
     ("name", "name"),
-    ("email", "email"),
     ("picture", "picture"),
-    ("link", "profile_url"),
 ]
 
 # Internationalization
