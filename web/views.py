@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 
@@ -12,6 +12,9 @@ def coordinator_required(fn):
             return fn(request, *args, **kwargs)
 
         print(request.session.__dict__)
+        if "invite_code" not in request.session:
+            return HttpResponseForbidden()
+
         pk = request.session["invite_code"]
         invite = get_object_or_404(models.Invite, pk=pk, used=False)
         request.user.is_coordinator = True
