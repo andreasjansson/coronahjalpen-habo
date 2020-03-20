@@ -1,10 +1,11 @@
+import pytz
+from django.utils.timezone import activate as activate_timezone
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from web import models
-
 
 def coordinator_required(fn):
     def wrapper(request, *args, **kwargs):
@@ -23,6 +24,7 @@ def coordinator_required(fn):
         invite.user = request.user
         invite.save()
         return fn(request, *args, **kwargs)
+
     return wrapper
 
 
@@ -47,6 +49,7 @@ def invite_detail(request, pk):
 @login_required
 @coordinator_required
 def manage_calls(request):
+    activate_timezone(pytz.timezone("Europe/Stockholm"))
     calls = models.list_calls()
     return render(request, "calls.html", {"calls": calls})
 
