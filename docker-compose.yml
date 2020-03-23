@@ -18,6 +18,7 @@ services:
       PHONE_NUMBER: "$PHONE_NUMBER"
       FB_APP_ID: "$FB_APP_ID"
       FB_APP_SECRET: "$FB_APP_SECRET"
+      VOLUNTEER_SHEET: "$VOLUNTEER_SHEET"
     volumes:
       - .:/app
     ports:

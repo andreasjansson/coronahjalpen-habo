@@ -1,3 +1,4 @@
+import os
 import pytz
 from django.utils.timezone import activate as activate_timezone
 from django.conf import settings
@@ -51,7 +52,8 @@ def invite_detail(request, pk):
 def manage_calls(request):
     activate_timezone(pytz.timezone("Europe/Stockholm"))
     calls = models.list_calls()
-    return render(request, "calls.html", {"calls": calls})
+    volunteer_sheet = os.environ["VOLUNTEER_SHEET"]
+    return render(request, "calls.html", {"calls": calls, "volunteer_sheet": volunteer_sheet})
 
 
 @login_required
