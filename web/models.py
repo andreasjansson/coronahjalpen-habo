@@ -90,7 +90,10 @@ def format_number(raw: str) -> str:
 
 
 def get_recording(tc) -> Tuple[Optional[str], int]:
-    rec = tc.recordings.list()[0]
+    recs = tc.recordings.list()
+    if not recs:
+        return None, 0
+    rec = recs[0]
     duration = int(rec.duration)
     if duration <= 0:
         return None, 0
