@@ -1,55 +1,78 @@
-{% extends "base.html" %}
 {% load static %}
 
-{% block content %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
+    <title>Coronahjälpen Habo - Samordning</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static "calls.css" %}">
+    {% include "favicon.html" %}
+  </head>
+  <body>
+    <div class="container">
 
-<h1>Röstbrevlåda</h1>
-<p>
-  Lyssna av nya meddelanden, posta namn och ungefärlig adress i <a href="https://www.facebook.com/groups/coronahjalp.habo" target="blank">Facebookgruppen</a>, och klicka sedan på "Postad"-knappen.
-</p>
-<p>
-  När någon i Facebookgruppen säger att de kan ta beställningen, skicka direktmeddelande till den personen och ge dem fullständig adress och telefonnummer.
-</p>
-<p>
-  Om ingen svarar i Facebookgruppen kan du också ringa till någon i <a href="{{ volunteer_sheet }}">listan över frivilliga som inte har internet</a>.
-</p>
-<p>
-  Uppdatera gärna denna sidan lite då och då under dagens gång.
-</p>
+      <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
 
-<table id="voicemail">
-  <thead>
-    <tr>
-      <th>Hanterad</th>
-      <th>Tid</th>
-      <th>Telefonnummer</th>
-      <th>Längd</th>
-      <th>Lyssna</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for call in calls %}
-  <tr>
-    <td>
-      <input data-sid="{{ call.twilio_sid }}" class="mark-posted" type="checkbox" {% if call.handled %}checked="checked"{% endif %} />
-    </td>
-    <td>{{ call.timestamp|date:'Y-m-d H:i' }}</td>
-    <td>{{ call.number }}</td>
-    <td>{{ call.duration }}</td>
-    <td>
-      {% if call.recording_url %}
-      <audio controls src="{{ call.recording_url }}"></audio>
-      {% endif %}
-    </td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
+      <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1>Röstbrevlåda</h1>
+      </div>
 
-{% endblock content %}
+      <div class="row">
+        <div class="col-12">
+          <p>
+            Lyssna av nya meddelanden, posta namn och ungefärlig adress i <a href="https://www.facebook.com/groups/coronahjalp.habo" target="blank">Facebookgruppen</a> (ge posted ämnet "Beställning"), och klicka sedan på "Hanterad"-knappen. Kopiera gärna facebook länken till "Kommentar" fältet.
+          </p>
+          <p>
+            När någon i Facebookgruppen säger att de kan ta beställningen, skicka direktmeddelande till den personen och ge dem fullständig adress och telefonnummer. Om ingen svarar i Facebookgruppen kan du också ringa till någon i <a href="{{ volunteer_sheet }}">listan över frivilliga som inte har internet</a>. När personen som har leverarat varorna är färdig, klicka på Levererad knappen.
+          </p>
+          <p>
+            Uppdatera gärna denna sidan lite då och då under dagens gång.
+          </p>
+        </div>
+      </div>
 
-{% block scripts %}
-    <script src="{% static "calls.js" %}"></script>
-{% endblock scripts %}
+      <table id="voicemail" class="table">
+        <thead>
+          <tr>
+            <th>Hanterad</th>
+            <th>Levererad</th>
+            <th>Tid</th>
+            <th>Telefonnummer</th>
+            <th>Längd</th>
+            <th>Lyssna</th>
+            <th>Kommentar</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for call in calls %}
+          <tr>
+            <td>
+              <input data-sid="{{ call.twilio_sid }}" class="mark-posted" type="checkbox" {% if call.handled %}checked="checked"{% endif %} />
+            </td>
+            <td>
+              <input data-sid="{{ call.twilio_sid }}" class="mark-delivered" type="checkbox" {% if call.delivered %}checked="checked"{% endif %} />
+            </td>
+            <td>{{ call.timestamp|date:'Y-m-d H:i' }}</td>
+            <td>{{ call.number }}</td>
+            <td>{{ call.duration }}</td>
+            <td>
+              {% if call.recording_url %}
+              <audio controls src="{{ call.recording_url }}"></audio>
+              {% endif %}
+            </td>
+            <td>
+              <textarea data-sid="{{ call.twilio_sid }}" class="comment">{% if call.comment %}{{ call.comment }}{% endif %}</textarea>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script src="{% static "calls.js" %}"></script>
+    </div>
+  </body>
+</html>

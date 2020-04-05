@@ -38,7 +38,9 @@ class Invite(models.Model):
 
 class HandledCall(models.Model):
     twilio_sid = models.CharField(max_length=40)
-    handled_at = models.DateTimeField(auto_now_add=True)
+    handled_at = models.DateTimeField(null=True, default=None)
+    delivered_at = models.DateTimeField(null=True, default=None)
+    comment = models.CharField(max_length=1000, null=True, blank=True, default=None)
 
 
 @dataclass
@@ -48,13 +50,16 @@ class Call:
     number: str
     duration: int
     recording_url: Optional[str]
-    handled: Optional[HandledCall]
+    handled: bool
+    delivered: bool
+    comment: Optional[str]
 
 
 # TODO: cache these in our database
 def list_calls() -> List[Call]:
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    twilio_calls = client.calls.list(to=PHONE_NUMBER, limit=1000)
+    #twilio_calls = client.calls.list(to=PHONE_NUMBER, limit=1000)
+    twilio_calls = client.calls.list(to=PHONE_NUMBER, limit=10)
     calls: List[Call] = []
     for tc in twilio_calls:
         c = twilio_call_to_call(tc)
@@ -64,10 +69,15 @@ def list_calls() -> List[Call]:
 
 def twilio_call_to_call(tc) -> Call:
     sid = tc.sid
-    handled: Optional[HandledCall] = None
-    all_handled = HandledCall.objects.filter(twilio_sid=sid)
-    if len(all_handled) > 0:
-        handled = all_handled[0]
+    all_handled_calls = HandledCall.objects.filter(twilio_sid=sid)
+    handled = False
+    delivered = False
+    comment = None
+    if len(all_handled_calls) > 0:
+        handled_call = all_handled_calls[0]
+        handled = handled_call.handled_at is not None
+        delivered = handled_call.delivered_at is not None
+        comment = handled_call.comment
 
     recording_url, duration = get_recording(tc)
     return Call(
@@ -77,6 +87,8 @@ def twilio_call_to_call(tc) -> Call:
         duration=duration,
         recording_url=recording_url,
         handled=handled,
+        delivered=delivered,
+        comment=comment,
     )
 
 

@@ -1,0 +1,13 @@
+#voicemail {
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+
+#voicemail audio {
+    width: 150px;
+}
+
+#voicemail textarea {
+    width: 300px;
+}

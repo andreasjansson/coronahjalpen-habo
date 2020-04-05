@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import pytz
 from django.utils.timezone import activate as activate_timezone
@@ -61,10 +62,39 @@ def manage_calls(request):
 def call_posted(request):
     posted = request.POST["posted"]
     sid = request.POST["sid"]
+    call, _ = models.HandledCall.objects.get_or_create(twilio_sid=sid)
     if posted == "true":
-        handled = models.HandledCall(twilio_sid=sid)
-        handled.save()
+        call.handled_at = datetime.now()
+        call.save()
         return HttpResponse("Saved")
     else:
-        models.HandledCall.objects.filter(twilio_sid=sid).delete()
+        call.handled_at = None
+        call.save()
         return HttpResponse("Deleted")
+
+
+@login_required
+@coordinator_required
+def call_delivered(request):
+    delivered = request.POST["delivered"]
+    sid = request.POST["sid"]
+    call, _ = models.HandledCall.objects.get_or_create(twilio_sid=sid)
+    if delivered == "true":
+        call.delivered_at = datetime.now()
+        call.save()
+        return HttpResponse("Saved")
+    else:
+        call.delivered_at = None
+        call.save()
+        return HttpResponse("Deleted")
+
+
+@login_required
+@coordinator_required
+def call_comment(request):
+    text = request.POST["text"]
+    sid = request.POST["sid"]
+    call, _ = models.HandledCall.objects.get_or_create(twilio_sid=sid)
+    call.comment = text
+    call.save()
+    return HttpResponse("Saved")

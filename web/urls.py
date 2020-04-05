@@ -8,6 +8,8 @@ urlpatterns = [
     path("", views.index, name="home"),
     path("samordna/samtal", views.manage_calls, name="samtal"),
     path("samordna/samtal-postad", views.call_posted, name="samtal-postad"),
+    path("samordna/samtal-levererad", views.call_delivered, name="samtal-levererad"),
+    path("samordna/samtal-kommentar", views.call_comment, name="samtal-kommentar"),
     # social
     path("login/", views.login, name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
