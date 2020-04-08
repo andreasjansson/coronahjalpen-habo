@@ -1,13 +1,15 @@
 from datetime import datetime
 import os
 import pytz
+from django.forms.models import model_to_dict
 from django.utils.timezone import activate as activate_timezone
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from web import models
+
 
 def coordinator_required(fn):
     def wrapper(request, *args, **kwargs):
@@ -54,7 +56,9 @@ def manage_calls(request):
     activate_timezone(pytz.timezone("Europe/Stockholm"))
     calls = models.list_calls()
     volunteer_sheet = os.environ["VOLUNTEER_SHEET"]
-    return render(request, "calls.html", {"calls": calls, "volunteer_sheet": volunteer_sheet})
+    return render(
+        request, "calls.html", {"calls": calls, "volunteer_sheet": volunteer_sheet}
+    )
 
 
 @login_required
@@ -62,7 +66,7 @@ def manage_calls(request):
 def call_posted(request):
     posted = request.POST["posted"]
     sid = request.POST["sid"]
-    call, _ = models.HandledCall.objects.get_or_create(twilio_sid=sid)
+    call, _ = models.Call.objects.get_or_create(twilio_sid=sid)
     if posted == "true":
         call.handled_at = datetime.now()
         call.save()
@@ -78,7 +82,7 @@ def call_posted(request):
 def call_delivered(request):
     delivered = request.POST["delivered"]
     sid = request.POST["sid"]
-    call, _ = models.HandledCall.objects.get_or_create(twilio_sid=sid)
+    call, _ = models.Call.objects.get_or_create(twilio_sid=sid)
     if delivered == "true":
         call.delivered_at = datetime.now()
         call.save()
@@ -94,7 +98,14 @@ def call_delivered(request):
 def call_comment(request):
     text = request.POST["text"]
     sid = request.POST["sid"]
-    call, _ = models.HandledCall.objects.get_or_create(twilio_sid=sid)
+    call, _ = models.Call.objects.get_or_create(twilio_sid=sid)
     call.comment = text
     call.save()
     return HttpResponse("Saved")
+
+
+@login_required
+@coordinator_required
+def fetch_calls(request):
+    calls = {c.twilio_sid: model_to_dict(c) for c in models.Call.objects.all()}
+    return JsonResponse(calls)

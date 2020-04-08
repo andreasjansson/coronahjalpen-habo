@@ -48,7 +48,7 @@
         </thead>
         <tbody>
           {% for call in calls %}
-          <tr>
+          <tr class="call" data-sid="{{ call.twilio_sid }}">
             <td>
               <input data-sid="{{ call.twilio_sid }}" class="mark-posted" type="checkbox" {% if call.handled %}checked="checked"{% endif %} />
             </td>

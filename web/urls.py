@@ -10,6 +10,7 @@ urlpatterns = [
     path("samordna/samtal-postad", views.call_posted, name="samtal-postad"),
     path("samordna/samtal-levererad", views.call_delivered, name="samtal-levererad"),
     path("samordna/samtal-kommentar", views.call_comment, name="samtal-kommentar"),
+    path("samordna/samtal-ajax", views.fetch_calls, name="samtal-ajax"),
     # social
     path("login/", views.login, name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),

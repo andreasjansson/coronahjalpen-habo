@@ -30,6 +30,20 @@ function submitComment(e) {
   })
 }
 
+function updateCalls() {
+  $.getJSON("/samordna/samtal-ajax", function(response) {
+    for (var sid in response) {
+      var $call = $(".call[data-sid=" + sid + "]");
+      if ($call.length) {
+        var c = response[sid];
+        $(".mark-posted", $call)[0].checked = c.handled_at != null;
+        $(".mark-delivered", $call)[0].checked = c.delivered_at != null;
+        $(".comment", $call).val(c.comment);
+      }
+    }
+  });
+}
+
 var commentTimeout;
 
 $(".mark-posted").on("change", markPosted);
@@ -38,3 +52,5 @@ $('.comment').on("change keyup paste", function(e) {
   clearTimeout(commentTimeout);
   commentTimeout = setTimeout(function() { submitComment(e) }, 500);
 });
+
+setInterval(updateCalls, 2000);

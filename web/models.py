@@ -1,7 +1,7 @@
 import uuid
 import datetime
 import os
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Dict
 from dataclasses import dataclass
 from django.urls import reverse
 from django.contrib.auth.models import AbstractUser
@@ -36,59 +36,61 @@ class Invite(models.Model):
         return reverse("invite-detail", args=[self.code])
 
 
-class HandledCall(models.Model):
+class Call(models.Model):
     twilio_sid = models.CharField(max_length=40)
     handled_at = models.DateTimeField(null=True, default=None)
     delivered_at = models.DateTimeField(null=True, default=None)
     comment = models.CharField(max_length=1000, null=True, blank=True, default=None)
-
-
-@dataclass
-class Call:
-    twilio_sid: str
-    timestamp: datetime.datetime
+    recording_url = models.CharField(
+        max_length=500, null=True, blank=True, default=None
+    )
+    duration = models.IntegerField(default=0)
     number: str
-    duration: int
-    recording_url: Optional[str]
-    handled: bool
-    delivered: bool
-    comment: Optional[str]
+    timestamp: datetime.datetime
+
+    @property
+    def handled(self):
+        return self.handled_at is not None
+
+    @property
+    def delivered(self):
+        return self.delivered_at is not None
 
 
 # TODO: cache these in our database
 def list_calls() -> List[Call]:
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     twilio_calls = client.calls.list(to=PHONE_NUMBER, limit=1000)
+    db_calls = {c.twilio_sid: c for c in Call.objects.all()}
     calls: List[Call] = []
     for tc in twilio_calls:
-        c = twilio_call_to_call(tc)
+        c = twilio_call_to_call(db_calls, tc)
         calls.append(c)
     return calls
 
 
-def twilio_call_to_call(tc) -> Call:
+def twilio_call_to_call(db_calls: Dict[str, Call], tc) -> Call:
     sid = tc.sid
-    all_handled_calls = HandledCall.objects.filter(twilio_sid=sid)
-    handled = False
-    delivered = False
-    comment = None
-    if len(all_handled_calls) > 0:
-        handled_call = all_handled_calls[0]
-        handled = handled_call.handled_at is not None
-        delivered = handled_call.delivered_at is not None
-        comment = handled_call.comment
+    call = db_calls.get(sid)
+    timestamp = tc.date_created
+    number = format_number(tc.from_)
 
-    recording_url, duration = get_recording(tc)
-    return Call(
-        twilio_sid=sid,
-        timestamp=tc.date_created,
-        number=format_number(tc.from_),
-        duration=duration,
-        recording_url=recording_url,
-        handled=handled,
-        delivered=delivered,
-        comment=comment,
-    )
+    if not call:
+        recording_url, duration = get_recording(tc)
+        call = Call(
+            twilio_sid=sid,
+            duration=duration,
+            recording_url=recording_url,
+            handled_at=None,
+            delivered_at=None,
+            comment=None,
+        )
+        call.save()
+
+    call.timestamp = timestamp
+    call.number = number
+
+    return call
 
 
 def format_number(raw: str) -> str:
