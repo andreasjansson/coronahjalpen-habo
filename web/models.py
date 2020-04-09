@@ -75,7 +75,7 @@ def twilio_call_to_call(db_calls: Dict[str, Call], tc) -> Call:
     timestamp = tc.date_created
     number = format_number(tc.from_)
 
-    if not call:
+    if not call or not call.duration:
         recording_url, duration = get_recording(tc)
         call = Call(
             twilio_sid=sid,
