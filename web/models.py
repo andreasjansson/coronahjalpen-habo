@@ -111,6 +111,7 @@ def get_recording(tc) -> Tuple[Optional[str], int]:
     recs = tc.recordings.list()
     if not recs:
         return None, 0
+    recs.sort(key=lambda r: -int(r.duration))
     rec = recs[0]
     duration = int(rec.duration)
     if duration <= 0:

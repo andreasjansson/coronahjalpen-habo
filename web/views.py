@@ -66,7 +66,7 @@ def manage_calls(request):
 def call_posted(request):
     posted = request.POST["posted"]
     sid = request.POST["sid"]
-    call, _ = models.Call.objects.get_or_create(twilio_sid=sid)
+    call = models.Call.objects.get(twilio_sid=sid)
     if posted == "true":
         call.handled_at = datetime.now()
         call.save()
@@ -82,7 +82,7 @@ def call_posted(request):
 def call_delivered(request):
     delivered = request.POST["delivered"]
     sid = request.POST["sid"]
-    call, _ = models.Call.objects.get_or_create(twilio_sid=sid)
+    call = models.Call.objects.get(twilio_sid=sid)
     if delivered == "true":
         call.delivered_at = datetime.now()
         call.save()
@@ -98,7 +98,7 @@ def call_delivered(request):
 def call_comment(request):
     text = request.POST["text"]
     sid = request.POST["sid"]
-    call, _ = models.Call.objects.get_or_create(twilio_sid=sid)
+    call = models.Call.objects.get(twilio_sid=sid)
     call.comment = text
     call.save()
     return HttpResponse("Saved")
