@@ -28,6 +28,8 @@ function submitComment(e) {
     sid: sid,
     csrfmiddlewaretoken: window.CSRF_TOKEN,
   })
+
+  startRefresh();
 }
 
 function updateCalls() {
@@ -44,13 +46,17 @@ function updateCalls() {
   });
 }
 
+function startRefresh() {
+  refreshInterval = setInterval(updateCalls, 2000);
+}
+
 var commentTimeout;
+var refreshInterval;
 
 $(".mark-posted").on("change", markPosted);
 $(".mark-delivered").on("change", markDelivered);
 $('.comment').on("change keyup paste", function(e) {
   clearTimeout(commentTimeout);
+  clearInterval(refreshInterval);
   commentTimeout = setTimeout(function() { submitComment(e) }, 500);
 });
-
-setInterval(updateCalls, 2000);
