@@ -109,3 +109,13 @@ def call_comment(request):
 def fetch_calls(request):
     calls = {c.twilio_sid: model_to_dict(c) for c in models.Call.objects.all()}
     return JsonResponse(calls)
+
+
+@login_required
+@coordinator_required
+def stats(request):
+    activate_timezone(pytz.timezone("Europe/Stockholm"))
+    table = models.calls_per_week()
+    return render(
+        request, "stats.html", {"table": table}
+    )

@@ -1,0 +1,52 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Coronahjälpen Habo - Statistik</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static "stats.css" %}">
+    {% include "favicon.html" %}
+  </head>
+  <body>
+    <div class="container">
+
+      <script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
+
+      <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1>Statistik</h1>
+      </div>
+
+      <table id="calls-per-week" class="table">
+        <thead>
+          <tr>
+            <th>Vecka</th>
+            <th>Antal samtal</th>
+            <th>Antal beställningar (på facebook)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in table %}
+          <tr>
+            <td>
+              {{ row.day }}
+            </td>
+            <td>
+              {{ row.all_calls }}
+            </td>
+            <td>
+              {{ row.calls_with_fb }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script src="{% static "calls.js" %}"></script>
+    </div>
+  </body>
+</html>

@@ -1,8 +1,10 @@
+from collections import defaultdict
 import uuid
 import datetime
 import os
 from typing import Optional, Tuple, List, Dict
 from dataclasses import dataclass
+import pytz
 from django.urls import reverse
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -118,3 +120,38 @@ def get_recording(tc) -> Tuple[Optional[str], int]:
         return None, 0
     uri = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Recordings/{rec.sid}.mp3"
     return uri, duration
+
+
+def calls_per_week():
+    calls = list_calls()
+    calls_per_week = group_calls_per_week(calls)
+    table = []
+    for day, calls in calls_per_week.items():
+        all_calls = len(calls)
+        calls_with_fb = len([c for c in calls if c.comment and "facebook.com" in c.comment])
+        table.append({
+            "day": day.strftime("%Y-%m-%d"),
+            "all_calls": all_calls,
+            "calls_with_fb": calls_with_fb,
+        })
+    print(table)
+    return sorted(table, key=lambda r: r["day"], reverse=True)
+
+
+def group_calls_per_week(calls: List[Call]):
+    tz = pytz.timezone("Europe/Stockholm")
+    per_week: Dict[datetime.datetime, List[Call]] = {}
+
+    start_date = "2020-03-16"
+    start_time = datetime.datetime.strptime(start_date, "%Y-%m-%d").replace(tzinfo=tz)
+    end_time = datetime.datetime.now().replace(tzinfo=tz)
+    t = start_time
+    while t < end_time:
+        week_end = t + datetime.timedelta(days=7)
+        per_week[t] = []
+        for c in calls:
+            if c.timestamp >= t and c.timestamp < week_end:
+                per_week[t].append(c)
+        t = week_end
+
+    return per_week
