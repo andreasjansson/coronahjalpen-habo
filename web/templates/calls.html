@@ -26,7 +26,7 @@
             Lyssna av nya meddelanden, posta namn och ungefärlig adress i <a href="https://www.facebook.com/groups/coronahjalp.habo" target="blank">Facebookgruppen</a> (ge posted ämnet "Beställning"), och klicka sedan på "Hanterad"-knappen. Kopiera gärna facebook länken till "Kommentar" fältet.
           </p>
           <p>
-            När någon i Facebookgruppen säger att de kan ta beställningen, skicka direktmeddelande till den personen och ge dem fullständig adress och telefonnummer. Om ingen svarar i Facebookgruppen kan du också ringa till någon i <a href="{{ volunteer_sheet }}">listan över frivilliga som inte har internet</a>. När personen som har leverarat varorna är färdig, klicka på Levererad knappen.
+            När någon i Facebookgruppen säger att de kan ta beställningen, skicka direktmeddelande till den personen och ge dem fullständig adress och telefonnummer. Om ingen svarar i Facebookgruppen kan du också ringa till någon i <a href="{{ volunteer_sheet }}">listan över frivilliga som inte har internet</a>.
           </p>
           <p>
             Uppdatera gärna denna sidan lite då och då under dagens gång.
@@ -38,7 +38,6 @@
         <thead>
           <tr>
             <th>Hanterad</th>
-            <th>Levererad</th>
             <th>Tid</th>
             <th>Telefonnummer</th>
             <th>Längd</th>
@@ -51,9 +50,6 @@
           <tr class="call" data-sid="{{ call.twilio_sid }}">
             <td>
               <input data-sid="{{ call.twilio_sid }}" class="mark-posted" type="checkbox" {% if call.handled %}checked="checked"{% endif %} />
-            </td>
-            <td>
-              <input data-sid="{{ call.twilio_sid }}" class="mark-delivered" type="checkbox" {% if call.delivered %}checked="checked"{% endif %} />
             </td>
             <td>{{ call.timestamp|date:'Y-m-d H:i' }}</td>
             <td>{{ call.number }}</td>
