@@ -6,3 +6,4 @@ gevent
 twilio==6.37.0
 phonenumbers
 django-environ==0.4.5
+whitenoise==5.1.0

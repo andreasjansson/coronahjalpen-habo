@@ -28,7 +28,7 @@ env = environ.Env()  # pylint: disable=invalid-name
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # TODO, otherwise won't load static resources
+DEBUG = is_debug
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -119,9 +120,7 @@ LOGOUT_REDIRECT_URL = "login"
 SOCIAL_AUTH_FACEBOOK_KEY = env("FB_APP_ID")
 SOCIAL_AUTH_FACEBOOK_SECRET = env("FB_APP_SECRET")
 SOCIAL_AUTH_FACEBOOK_SCOPE = []
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-    "fields": "id, name, picture.type(large)"
-}
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {"fields": "id, name, picture.type(large)"}
 SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [
     ("name", "name"),
     ("picture", "picture"),
@@ -145,9 +144,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 if not is_debug:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
