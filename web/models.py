@@ -88,7 +88,8 @@ def twilio_call_to_call(db_calls: Dict[str, Call], tc) -> Call:
             comment=None,
         )
         call.save()
-    elif not call.duration:
+    elif not call.duration and timestamp > one_week_ago():
+        print(timestamp)
         recording_url, duration = get_recording(tc)
         call.recording_url = recording_url
         call.duration = duration
@@ -98,6 +99,11 @@ def twilio_call_to_call(db_calls: Dict[str, Call], tc) -> Call:
     call.number = number
 
     return call
+
+
+def one_week_ago():
+    tz = pytz.timezone("Europe/Stockholm")
+    return (datetime.datetime.today() - datetime.timedelta(days=7)).replace(tzinfo=tz)
 
 
 def format_number(raw: str) -> str:
@@ -124,16 +130,20 @@ def get_recording(tc) -> Tuple[Optional[str], int]:
 
 def calls_per_week():
     calls = list_calls()
-    calls_per_week = group_calls_per_week(calls)
+    per_week = group_calls_per_week(calls)
     table = []
-    for day, calls in calls_per_week.items():
+    for day, calls in per_week.items():
         all_calls = len(calls)
-        calls_with_fb = len([c for c in calls if c.comment and "facebook.com" in c.comment])
-        table.append({
-            "day": day.strftime("%Y-%m-%d"),
-            "all_calls": all_calls,
-            "calls_with_fb": calls_with_fb,
-        })
+        calls_with_fb = len(
+            [c for c in calls if c.comment and "facebook.com" in c.comment]
+        )
+        table.append(
+            {
+                "day": day.strftime("%Y-%m-%d"),
+                "all_calls": all_calls,
+                "calls_with_fb": calls_with_fb,
+            }
+        )
     print(table)
     return sorted(table, key=lambda r: r["day"], reverse=True)
 
