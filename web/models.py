@@ -60,9 +60,9 @@ class Call(models.Model):
 
 
 # TODO: cache these in our database
-def list_calls() -> List[Call]:
+def list_calls(limit=1000) -> List[Call]:
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    twilio_calls = client.calls.list(to=PHONE_NUMBER, limit=1000)
+    twilio_calls = client.calls.list(to=PHONE_NUMBER, limit=limit)
     db_calls = {c.twilio_sid: c for c in Call.objects.all()}
     calls: List[Call] = []
     for tc in twilio_calls:

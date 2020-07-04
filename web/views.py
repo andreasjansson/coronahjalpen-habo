@@ -54,10 +54,25 @@ def invite_detail(request, pk):
 @coordinator_required
 def manage_calls(request):
     activate_timezone(pytz.timezone("Europe/Stockholm"))
+    calls = models.list_calls(limit=20)
+    volunteer_sheet = os.environ["VOLUNTEER_SHEET"]
+    return render(
+        request,
+        "calls.html",
+        {"calls": calls, "volunteer_sheet": volunteer_sheet, "limited": True},
+    )
+
+
+@login_required
+@coordinator_required
+def manage_all_calls(request):
+    activate_timezone(pytz.timezone("Europe/Stockholm"))
     calls = models.list_calls()
     volunteer_sheet = os.environ["VOLUNTEER_SHEET"]
     return render(
-        request, "calls.html", {"calls": calls, "volunteer_sheet": volunteer_sheet}
+        request,
+        "calls.html",
+        {"calls": calls, "volunteer_sheet": volunteer_sheet, "limited": False},
     )
 
 
@@ -116,6 +131,4 @@ def fetch_calls(request):
 def stats(request):
     activate_timezone(pytz.timezone("Europe/Stockholm"))
     table = models.calls_per_week()
-    return render(
-        request, "stats.html", {"table": table}
-    )
+    return render(request, "stats.html", {"table": table})
