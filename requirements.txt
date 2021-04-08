@@ -1,4 +1,4 @@
-django==3.0.4
+django==3.0.14
 social-auth-app-django
 gunicorn==20.0.4
 psycopg2
